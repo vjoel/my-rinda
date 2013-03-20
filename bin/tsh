@@ -1,0 +1,114 @@
+#!/usr/bin/env ruby
+
+if ARGV.delete("-h") or ARGV.delete("--help")
+  puts <<-END
+    Usage:
+      #$0
+      #$0 uri
+      #$0 uri files...
+    
+    The first form starts a tuplespace server as a child process and prints
+    its uri. Then it enters an interactive session in which the current object
+    is the proxy to that tuplespace.
+    
+    The second form starts an interactive session in which the current object
+    is the proxy to the tuplespace at the given uri.
+    
+    The third form executes the given script files in a context where the
+    constant TS is the proxy to the tuplespace at the given uri.
+  END
+  exit
+end
+
+topdir = File.dirname(File.dirname(File.expand_path(__FILE__)))
+libdir = File.join(topdir, "lib")
+$LOAD_PATH.unshift libdir
+
+require 'rinda/rinda'
+
+uri = ARGV.shift
+
+if not uri
+  rd, wr = IO.pipe
+
+  server = fork do
+    rd.close
+    require 'rinda/tuplespace'
+    ts = Rinda::TupleSpace.new
+    DRb.start_service(nil, ts)
+    wr.puts DRb.uri
+    DRb.thread.join
+  end
+
+  at_exit do
+    Process.kill "TERM", server
+    Process.wait server
+  end
+
+  wr.close
+  uri = rd.gets.chomp
+  puts "tuplespace is at #{uri}"
+end
+
+DRb.start_service
+ts = Rinda::TupleSpaceProxy.new(DRbObject.new_with_uri(uri))
+
+# Script mode
+if ARGV.size > 0
+  TS = ts
+  ARGV.each do |filename|
+    load filename
+  end
+  exit
+end
+
+# Interactive mode
+require 'irb'
+require 'irb/completion'
+
+module IRB
+  
+#  def IRB.parse_opts
+#    # Don't touch ARGV, which belongs to the app which called this module.
+#  end
+  
+  def IRB.start_session(*args)
+    unless $irb
+      IRB.setup nil
+      ## maybe set some opts here, as in parse_opts in irb/init.rb?
+    end
+
+    workspace = WorkSpace.new(*args)
+
+    if @CONF[:SCRIPT] ## normally, set by parse_opts
+      $irb = Irb.new(workspace, @CONF[:SCRIPT])
+    else
+      $irb = Irb.new(workspace)
+    end
+
+    @CONF[:IRB_RC].call($irb.context) if @CONF[:IRB_RC]
+    @CONF[:MAIN_CONTEXT] = $irb.context
+
+    trap 'INT' do
+      $irb.signal_handle
+    end
+    
+    custom_configuration if defined?(IRB.custom_configuration)
+
+    begin
+      catch :IRB_EXIT do
+        $irb.eval_input
+      end
+    ensure
+      IRB.irb_at_exit
+    end
+    
+    ## might want to reset your app's interrupt handler here
+  end
+end
+
+class Object
+  include IRB::ExtendCommandBundle # so that Marshal.dump works
+end
+
+IRB.start_session(ts)
