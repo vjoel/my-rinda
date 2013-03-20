@@ -220,6 +220,7 @@ module Rinda
       def push val
         raise unless @open
         @val = val
+        nil # so that val doesn't get marshalled again
       end
     end
 
@@ -242,7 +243,7 @@ module Rinda
 
     def take(tuple, sec=nil, &block)
       port = Port.new
-      @ts.move(DRbObject.new(port), tuple, sec, &block)
+      @ts.move_fast(DRbObject.new(port), tuple, sec, &block)
       port.val
     ensure
       port.close # don't let the DRb thread push to it when remote sends tuple
