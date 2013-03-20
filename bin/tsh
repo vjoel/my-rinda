@@ -25,6 +25,8 @@ libdir = File.join(topdir, "lib")
 $LOAD_PATH.unshift libdir
 
 require 'rinda/rinda'
+require 'rinda/take-all'
+require 'rinda/replace-all'
 
 uri = ARGV.shift
 
@@ -35,6 +37,8 @@ if not uri
     rd.close
     require 'rinda/tuplespace'
     ts = Rinda::TupleSpace.new
+    ts.extend Rinda::TupleSpace::TakeAll
+    ts.extend Rinda::TupleSpace::ReplaceAll
     DRb.start_service(nil, ts)
     wr.puts DRb.uri
     DRb.thread.join
@@ -52,6 +56,8 @@ end
 
 DRb.start_service
 ts = Rinda::TupleSpaceProxy.new(DRbObject.new_with_uri(uri))
+ts.extend Rinda::TupleSpaceProxy::TakeAll
+ts.extend Rinda::TupleSpaceProxy::ReplaceAll
 
 # Script mode
 if ARGV.size > 0
