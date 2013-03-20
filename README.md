@@ -106,7 +106,7 @@ See example/take-all.rb.
 
 ## Tools ##
 
-### tsh -- the ruplespace shell ###
+### tsh -- the tuplespace shell ###
 
 Runs in two modes:
 
