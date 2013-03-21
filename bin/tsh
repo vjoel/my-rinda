@@ -41,6 +41,12 @@ if not uri
     ts.extend Rinda::TupleSpace::ReplaceAll
     DRb.start_service(nil, ts)
     wr.puts DRb.uri
+    
+    trap("INT") do
+      # ^C in the irb session (parent process) should not kill the
+      # server (child process)
+    end
+    
     DRb.thread.join
   end
 
