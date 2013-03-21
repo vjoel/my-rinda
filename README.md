@@ -28,7 +28,7 @@ The purpose of Rinda::TupleSpaceProxy is to avoid losing tuples when a client di
 
 This involves a total of **three** marshal operations by DRb: the push argument, the push return value (which is an array containing the push argument), and the #take return value. Only the first is necessary.
 
-The following patch adds Rinda::TupleSpaceProxy#take_fast, which avoids the two redundant marshal operations. The unit tests in the ruby source pass when calling this method instead of #take.
+The patch adds Rinda::TupleSpaceProxy#take_fast, which avoids the two redundant marshal operations. The unit tests in the ruby source pass when calling this method instead of #take.
 
 The improvement is small when the object is simple. However, for complex objects, eliminating the redundant marshalling reduces network traffic and increases speed by a factor of 2. See example/bench.rb.
 
@@ -114,9 +114,11 @@ Runs in two modes:
 
 2. an irb as above connected to a tuplespace server given by a URL on the command line.
 
+In each case, the _self_ of the irb session is the TupleSpaceProxy, so you can just type tuplespace commands directly.
+
 See `bin/tsh --help` for details. A simple example:
 
-*In terminal ONE*
+*In terminal ONE* irb is running with the tuplespace server in a child process:
 
     $ bin/tsh
     tuplespace is at druby://myhostname:37393
@@ -126,7 +128,7 @@ See `bin/tsh --help` for details. A simple example:
     => [1, 2]
 
 
-*In terminal TWO*
+*In terminal TWO* irb is running and connected to the server in terminsl one:
 
     $ bin/tsh druby://myhostname:37393
     >> take [1,2]
