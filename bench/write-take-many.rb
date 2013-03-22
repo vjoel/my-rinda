@@ -43,6 +43,11 @@ c1 = fork do
     result = RubyProf.stop
     printer = RubyProf::FlatPrinter.new(result)
     printer.print(STDOUT)
+    printer = RubyProf::MultiPrinter.new(result)
+    FileUtils.makedirs "bench/results"
+    printer.print(
+      :path => "bench/results",
+      :profile => File.basename(__FILE__, ".rb"))
   end
 end
 
