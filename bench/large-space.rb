@@ -2,6 +2,11 @@
 
 $LOAD_PATH.unshift "lib"
 
+profile = ARGV.delete("-p")
+if profile
+  require 'ruby-prof'
+end
+
 require 'rinda/rinda'
 
 rd, wr = IO.pipe
@@ -33,10 +38,18 @@ c1 = fork do
     ts.write([i]) ## should measure times separately from this setup
   end
 
+  RubyProf.start if profile ## not profiling the server
+
   n_steps.times do |step|
     i = step % n_elts
     ts.take([i])
     ts.write([i])
+  end
+
+  if profile
+    result = RubyProf.stop
+    printer = RubyProf::FlatPrinter.new(result)
+    printer.print(STDOUT)
   end
 end
 

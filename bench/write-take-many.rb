@@ -3,6 +3,11 @@
 
 $LOAD_PATH.unshift "lib"
 
+profile = ARGV.delete("-p")
+if profile
+  require 'ruby-prof'
+end
+
 require 'rinda/rinda'
 
 rd, wr = IO.pipe
@@ -27,9 +32,17 @@ c1 = fork do
   
   n = 1000
   
+  RubyProf.start if profile ## not profiling the server
+
   n.times do |i|
     ts.write([i])
     ts.take([nil])
+  end
+  
+  if profile
+    result = RubyProf.stop
+    printer = RubyProf::FlatPrinter.new(result)
+    printer.print(STDOUT)
   end
 end
 
