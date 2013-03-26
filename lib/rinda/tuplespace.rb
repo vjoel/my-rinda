@@ -480,43 +480,6 @@ module Rinda
     end
 
     ##
-    # Moves +tuple+ to +port+, returning nil
-
-    def move_fast(port, tuple, sec=nil)
-      template = WaitTemplateEntry.new(self, tuple, sec)
-      yield(template) if block_given?
-      synchronize do
-        entry = @bag.find(template)
-        if entry
-          port.push(entry.value)
-          @bag.delete(entry)
-          notify_event('take', entry.value)
-          return nil
-        end
-        raise RequestExpiredError if template.expired?
-
-        begin
-          @take_waiter.push(template)
-          start_keeper if template.expires
-          while true
-            raise RequestCanceledError if template.canceled?
-            raise RequestExpiredError if template.expired?
-            entry = @bag.find(template)
-            if entry
-              port.push(entry.value)
-              @bag.delete(entry)
-              notify_event('take', entry.value)
-              return nil
-            end
-            template.wait
-          end
-        ensure
-          @take_waiter.delete(template)
-        end
-      end
-    end
-
-    ##
     # Moves +tuple+ to +port+.
 
     def move(port, tuple, sec=nil)
@@ -528,7 +491,7 @@ module Rinda
           port.push(entry.value) if port
           @bag.delete(entry)
           notify_event('take', entry.value)
-          return entry.value
+          return port ? nil : entry.value
         end
         raise RequestExpiredError if template.expired?
 
@@ -543,7 +506,7 @@ module Rinda
               port.push(entry.value) if port
               @bag.delete(entry)
               notify_event('take', entry.value)
-              return entry.value
+              return port ? nil : entry.value
             end
             template.wait
           end
