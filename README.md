@@ -136,7 +136,7 @@ if _read_tuple_ is nil and the #take fails, then the call returns
 
 **Why it is needed**
 
-It is not possible to do this atomically with existing primitives and no locks. A client could #take a lock tuple, but then if the client dies, the tuplespace server may not find out about it for some time, leaving the lock set too long. It is also inefficient. The #attempt operation can be used for concurrent access without locking (i.e. "optimistic locking").
+It is not possible to do this atomically with existing primitives and no locks. A client could #take a lock tuple, but then if the client dies, the tuplespace server may not find out about it for some time, leaving the lock set too long. It is also inefficient. The #attempt operation can be used for concurrent access without locking (i.e. "optimistic locking")--see example/optimist.rb.
 
 The #attempt operation is a tuplespace analog of the compare-and-swap instruction[1]--see example/election.rb. Similar "conditional put" operations were recently added to a commercial tuplespace implementation[2] and to a commercial distributed key-value database[3].
 
