@@ -20,6 +20,8 @@ if ARGV.delete("-h") or ARGV.delete("--help")
   exit
 end
 
+count_threads = ARGV.delete("--count-threads")
+
 topdir = File.dirname(File.dirname(File.expand_path(__FILE__)))
 libdir = File.join(topdir, "lib")
 $LOAD_PATH.unshift libdir
@@ -45,6 +47,22 @@ if not uri
     trap("INT") do
       # ^C in the irb session (parent process) should not kill the
       # server (child process)
+    end
+    
+    if count_threads
+      n_alive_prev = 0
+      loop do
+        tl = Thread.list.dup
+        n_alive_now = tl.select {|t| t.alive?}.count
+        n_dead_now = tl.count - n_alive_now
+
+        if n_alive_now != n_alive_prev
+          n_alive_prev = n_alive_now
+          $stderr.puts "\nthreads: #{n_alive_now}; dead: #{n_dead_now}\n"
+        end
+
+        sleep 0.5
+      end
     end
     
     DRb.thread.join
