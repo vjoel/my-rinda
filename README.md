@@ -104,6 +104,56 @@ The new code is entirely contained in two modules in a single separate file. The
 See example/take-all.rb.
 
 
+### TupleSpace primitives for conditional modifications ###
+
+#### 1. TupleSpace#attempt ####
+
+**What it does**
+
+Calling
+
+ ```ruby
+  attempt(take_tuple, write_tuple, read_tuple=nil, sec=nil)
+```
+
+atomically attempts the following sequence of operations. Take _take_tuple_, without blocking. If successful, write _write_tuple_. Otherwise, read _read_tuple_, blocking if necessary.
+
+The return value is a pair:
+
+```ruby
+  [ tuple, entry ]
+```
+
+The _tuple_ is the result of the take, if successful. Otherwise, it is
+the result of the read.
+
+The _entry_ is like the return value of #write, if the write happened.
+Otherwise, _entry_ is nil.
+
+if _read_tuple_ is nil and the #take fails, then the call returns
+[nil, nil] without blocking.
+
+
+**Why it is needed**
+
+It is not possible to do this atomically with existing primitives and no locks. A client could #take a lock tuple, but then if the client dies, the tuplespace server may not find out about it for some time, leaving the lock set too long. It is also inefficient. The #attempt operation can be used for concurrent access without locking (i.e. "optimistic locking").
+
+The #attempt operation is a tuplespace analog of the compare-and-swap instruction[1]--see example/election.rb. Similar "conditional put" operations were recently added to a commercial tuplespace implementation[2] and to a commercial distributed key-value database[3].
+
+[1] http://en.wikipedia.org/wiki/Compare-and-swap
+[2] https://www.tibcommunity.com/blogs/activespaces
+[3] http://en.wikipedia.org/wiki/Amazon_SimpleDB#Conditional_Put_and_Delete
+
+**Modularity**
+
+The new code is entirely contained in two modules in a single separate file. These modules are included/extended to TupleSpace and TupleSpaceProxy as desired to add the replace functionality.
+
+
+**Examples**
+
+See example/election.rb.
+
+
 ## Tools ##
 
 ### tsh -- the tuplespace shell ###
