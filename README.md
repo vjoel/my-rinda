@@ -104,6 +104,36 @@ The new code is entirely contained in two modules in a single separate file. The
 See example/take-all.rb.
 
 
+### TupleSpace primitives for nonblocking operations ###
+
+#### 1. TupleSpace#take_any ####
+
+**What it does**
+
+Calling
+
+```ruby
+  take_any(tuple)
+```
+
+atomically removes the first matching tuple, if any. It does not block waiting for tuples. The return value is the tuples, or nil if no tuple matches.
+
+
+**Why it is needed**
+
+It is not possible to do this atomically with existing primitives. Also, some other tuplespace implementations eventually add this feature.
+
+
+**Modularity**
+
+The new code is entirely contained in two modules in a single separate file. These modules are included/extended to TupleSpace and TupleSpaceProxy as desired to add the take_all functionality.
+
+
+**Examples**
+
+See example/data-dependency.rb.
+
+
 ### TupleSpace primitives for conditional modifications ###
 
 #### 1. TupleSpace#attempt ####
