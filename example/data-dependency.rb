@@ -4,7 +4,7 @@ $use_take = ARGV.delete("--use-take")
 
 require 'rinda/rinda'
 require 'rinda/attempt'
-require 'rinda/take-all' if $use_take
+require 'rinda/take-any' if $use_take
 
 rd, wr = IO.pipe
 
@@ -13,7 +13,7 @@ server = fork do
   require 'rinda/tuplespace'
   ts = Rinda::TupleSpace.new
   ts.extend Rinda::TupleSpace::Attempt
-  ts.extend Rinda::TupleSpace::TakeAll if $use_take
+  ts.extend Rinda::TupleSpace::TakeAny if $use_take
   
   ts.write [:answer, :unknown]
   
@@ -29,18 +29,18 @@ def client(svr_uri)
   DRb.start_service
   ts = Rinda::TupleSpaceProxy.new(DRbObject.new_with_uri(svr_uri))
   ts.extend Rinda::TupleSpaceProxy::Attempt
-  ts.extend Rinda::TupleSpaceProxy::TakeAll if $use_take
+  ts.extend Rinda::TupleSpaceProxy::TakeAny if $use_take
   
   sleep rand(0.0 .. 0.1)
   
   if $use_take
     # alternate implementation using a non-blocking take
-    if ts.take_all([:answer, :unknown]).empty?
-      tuple = ts.read [:answer, nil]
-      entry = nil
-    else
+    if ts.take_any([:answer, :unknown])
       tuple = [:solver, $$]
       entry = ts.write tuple
+    else
+      tuple = ts.read [:answer, nil]
+      entry = nil
     end
 
   else
