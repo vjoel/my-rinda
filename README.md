@@ -171,7 +171,9 @@ It is not possible to do this atomically with existing primitives and no locks. 
 The #attempt operation is a tuplespace analog of the compare-and-swap instruction[1]--see example/election.rb. Similar "conditional put" operations were recently added to a commercial tuplespace implementation[2] and to a commercial distributed key-value database[3].
 
 [1] http://en.wikipedia.org/wiki/Compare-and-swap
+
 [2] https://www.tibcommunity.com/blogs/activespaces
+
 [3] http://en.wikipedia.org/wiki/Amazon_SimpleDB#Conditional_Put_and_Delete
 
 In addition, combining operations in this way has some advantages:
