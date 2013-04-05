@@ -151,7 +151,7 @@ The new code is entirely contained in two modules in a single separate file. The
 
 **Examples**
 
-See example/election.rb.
+See example/election.rb and example/optimist.rb.
 
 
 ## Tools ##
