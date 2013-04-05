@@ -144,6 +144,12 @@ The #attempt operation is a tuplespace analog of the compare-and-swap instructio
 [2] https://www.tibcommunity.com/blogs/activespaces
 [3] http://en.wikipedia.org/wiki/Amazon_SimpleDB#Conditional_Put_and_Delete
 
+In addition, combining operations in this way has some advantages:
+
+1. it reduces network traffic
+
+2. it eliminates risk of client failure between operations
+
 **Modularity**
 
 The new code is entirely contained in two modules in a single separate file. These modules are included/extended to TupleSpace and TupleSpaceProxy as desired to add the replace functionality.
