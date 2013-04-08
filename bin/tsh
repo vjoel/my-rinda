@@ -30,6 +30,7 @@ require 'rinda/rinda'
 require 'rinda/take-all'
 require 'rinda/replace-all'
 require 'rinda/attempt'
+require 'rinda/establish'
 
 uri = ARGV.shift
 
@@ -43,6 +44,7 @@ if not uri
     ts.extend Rinda::TupleSpace::TakeAll
     ts.extend Rinda::TupleSpace::ReplaceAll
     ts.extend Rinda::TupleSpace::Attempt
+    ts.extend Rinda::TupleSpace::Establish
     DRb.start_service(nil, ts)
     wr.puts DRb.uri
     
@@ -85,6 +87,7 @@ ts = Rinda::TupleSpaceProxy.new(DRbObject.new_with_uri(uri))
 ts.extend Rinda::TupleSpaceProxy::TakeAll
 ts.extend Rinda::TupleSpaceProxy::ReplaceAll
 ts.extend Rinda::TupleSpaceProxy::Attempt
+ts.extend Rinda::TupleSpaceProxy::Establish
 
 # Script mode
 if ARGV.size > 0

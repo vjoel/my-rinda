@@ -191,6 +191,30 @@ The new code is entirely contained in two modules in a single separate file. The
 
 See example/election.rb, example/optimist.rb, example/data-dependency.rb.
 
+#### 2. TupleSpace#estasblish ####
+
+**What it does**
+
+Calling
+
+ ```ruby
+  establish(pat_tuple, tuple, sec=nil)
+```
+
+atomically attempts the following sequence of operations. If _pat_tuple_ matches something, write _tuple_ and return the entry, otherwise return false.
+
+**Why it is needed**
+
+It is not possible to do this atomically with existing primitives and no locks. Can be used to set the first tuple that matches a condition. Useful for a lock-free first-choice-wins protocol.
+
+**Modularity**
+
+The new code is entirely contained in two modules in a single separate file. These modules are included/extended to TupleSpace and TupleSpaceProxy as desired to add the replace functionality.
+
+**Examples**
+
+See example/establish.rb.
+
 
 ## Tools ##
 
