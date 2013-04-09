@@ -213,7 +213,7 @@ The new code is entirely contained in two modules in a single separate file. The
 
 **Examples**
 
-See example/establish.rb.
+See example/establish.rb and example/election.rb.
 
 
 ## Tools ##
