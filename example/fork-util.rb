@@ -12,6 +12,7 @@ class EasyTuplespace
 
   def initialize
     @pids = []
+    @pid = nil
   end
   
   def cleanup
@@ -19,7 +20,7 @@ class EasyTuplespace
       Process.waitpid pid
     end
 
-    Process.kill "TERM", @pid
+    Process.kill "TERM", @pid if @pid
   end
   
   def server
