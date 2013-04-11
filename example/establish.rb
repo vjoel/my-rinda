@@ -35,7 +35,7 @@ end
 n = 10
 
 n.times do
-  c1 = fork do
+  fork do
     client(uri)
   end
 end
