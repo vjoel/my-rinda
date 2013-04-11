@@ -30,7 +30,7 @@ class EasyTuplespace
       rd.close
       require 'rinda/tuplespace'
       ts = Rinda::TupleSpace.new
-      yield ts
+      yield ts if block_given?
       DRb.start_service(nil, ts)
       wr.puts DRb.uri
       wr.close
@@ -46,14 +46,14 @@ class EasyTuplespace
     @pids << fork do
       DRb.start_service
       ts = Rinda::TupleSpaceProxy.new(DRbObject.new_with_uri(@uri))
-      yield ts
+      yield ts if block_given?
     end
   end
   
   def local
     DRb.start_service unless DRb.primary_server ## ok?
     ts = Rinda::TupleSpaceProxy.new(DRbObject.new_with_uri(@uri))
-    yield ts
+    yield ts if block_given?
   end
 end
 
