@@ -245,3 +245,12 @@ See `bin/tsh --help` for details. A simple example:
     $ bin/tsh druby://myhostname:37393
     >> take [1,2]
     => [1, 2]
+
+This can be made more convenient by writing the uri to a file:
+
+    $ bin/tsh --write-uri path/to/uri_file
+    ...
+    
+    $ bin/tsh @path/to/uri_file
+    ...
+

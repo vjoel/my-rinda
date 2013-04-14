@@ -17,15 +17,17 @@ if ARGV.delete("-h") or ARGV.delete("--help")
     The third form executes the given script files in a context where the
     constant TS is the proxy to the tuplespace at the given uri.
     
+    If the uri is of the form "@uri_file", read the uri from uri_file instead.
+    
     Options:
+    
+    --write-uri file  write the uri to file, for use with "@uri_file"
     
     --count-threads   periodically display number of alive and dead threads.
     
   END
   exit
 end
-
-count_threads = ARGV.delete("--count-threads")
 
 topdir = File.dirname(File.dirname(File.expand_path(__FILE__)))
 libdir = File.join(topdir, "lib")
@@ -36,6 +38,16 @@ require 'rinda/take-all'
 require 'rinda/replace-all'
 require 'rinda/attempt'
 require 'rinda/establish'
+require 'argos'
+
+optdef = {
+  "write-uri"     => proc {|arg| arg },
+  "count-threads" => true
+}
+opts = Argos.parse_options(ARGV, optdef)
+
+count_threads = opts["count-threads"]
+write_uri = opts["write-uri"]
 
 uri = ARGV.shift
 
@@ -85,6 +97,16 @@ if not uri
   wr.close
   uri = rd.gets.chomp
   puts "tuplespace is at #{uri}"
+  
+  if write_uri
+    File.open(write_uri, "w") do |f|
+      f.puts uri
+    end
+  end
+end
+
+if /^@(.*)/ =~ uri
+  uri = File.read($1).chomp
 end
 
 DRb.start_service
