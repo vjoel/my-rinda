@@ -16,6 +16,11 @@ if ARGV.delete("-h") or ARGV.delete("--help")
     
     The third form executes the given script files in a context where the
     constant TS is the proxy to the tuplespace at the given uri.
+    
+    Options:
+    
+    --count-threads   periodically display number of alive and dead threads.
+    
   END
   exit
 end
