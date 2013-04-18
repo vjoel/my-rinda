@@ -65,9 +65,11 @@ if not uri
     DRb.start_service(nil, ts)
     wr.puts DRb.uri
     
-    trap("INT") do
-      # ^C in the irb session (parent process) should not kill the
-      # server (child process)
+    if ARGV.size == 0 # interactive mode
+      trap("INT") do
+        # ^C in the irb session (parent process) should not kill the
+        # server (child process)
+      end
     end
     
     if count_threads
