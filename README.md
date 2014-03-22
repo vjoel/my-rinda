@@ -191,7 +191,7 @@ The new code is entirely contained in two modules in a single separate file. The
 
 See example/election.rb, example/optimist.rb, example/data-dependency.rb.
 
-#### 2. TupleSpace#estasblish ####
+#### 2. TupleSpace#establish ####
 
 **What it does**
 
@@ -230,7 +230,7 @@ In each case, the _self_ of the irb session is the TupleSpaceProxy, so you can j
 
 See `bin/tsh --help` for details. A simple example:
 
-*In terminal ONE* irb is running with the tuplespace server in a child process:
+**In terminal ONE** irb is running with the tuplespace server in a child process:
 
     $ bin/tsh
     tuplespace is at druby://myhostname:37393
@@ -240,7 +240,7 @@ See `bin/tsh --help` for details. A simple example:
     => [1, 2]
 
 
-*In terminal TWO* irb is running and connected to the server in terminsl one:
+**In terminal TWO** irb is running and connected to the server in terminal one:
 
     $ bin/tsh druby://myhostname:37393
     >> take [1,2]
