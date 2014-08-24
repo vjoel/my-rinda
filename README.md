@@ -3,6 +3,8 @@ my-rinda
 
 My fixes and features for ruby's standard rinda library.
 
+If you're interested in tuplespaces and ruby, please take a look at https://github.com/vjoel/tupelo, which is a complete replacement for rinda.
+
 ## Fixes ##
 
 ### Lost tuples when #take is interrupted ###
